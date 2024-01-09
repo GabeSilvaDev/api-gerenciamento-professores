@@ -1,4 +1,4 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from "@nestjs/common";
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, UnauthorizedException } from "@nestjs/common";
 import { ValidationError } from "class-validator";
 import { Response } from 'express';
 
@@ -9,18 +9,27 @@ export class ValidationExceptionFilter implements ExceptionFilter {
         const response = ctx.getResponse<Response>();
         const validationErrors = exception.getResponse()['message'] as Array<ValidationError>;
 
-        const errors = {}
-        validationErrors.forEach((error) => {
-            errors[this.camelToSnake(error.property)] = [Object.values(error.constraints).join(', ')];
-        });
+        if (exception instanceof UnauthorizedException) {
+            response.status(401).send({
+                message: 'Credenciais inválidas',
+                status: 401,
+                error: 'Unauthorized',
+                cause: 'InvalidCredentialsError',
+            });
+        } else {
+            const errors = {}
+            validationErrors.forEach((error) => {
+                errors[this.camelToSnake(error.property)] = [Object.values(error.constraints).join(', ')];
+            });
 
-        response.status(400).send({
-            message: 'Validation fails',
-            status: 400,
-            error: 'Bad Request',
-            cause: 'ValidationError',
-            errors,
-        });
+            response.status(400).send({
+                message: 'Validation fails',
+                status: 400,
+                error: 'Bad Request',
+                cause: 'ValidationError',
+                errors,
+            });
+        }
     }
 
     private camelToSnake(key: string) {

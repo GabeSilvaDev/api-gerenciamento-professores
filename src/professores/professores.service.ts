@@ -45,6 +45,12 @@ export class ProfessoresService {
     }
   }
 
+  async findOneByEmail(email: string) {
+    return await this.professorRepository.findOneBy({
+      email: email,
+    });
+  }
+
   update(id: number) {
     return `This action updates a #${id} professore`;
   }
