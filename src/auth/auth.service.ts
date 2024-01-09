@@ -30,6 +30,38 @@ export class AuthService {
             { secret: 'treina', expiresIn: '30s' }
         );
 
-        return { token: acessToken };
+        const refreshToken = this.jwtService.sign(
+            { email: payload.email },
+            { secret: 'refresh', expiresIn: '60s' }
+        );
+
+        return { token: acessToken, refresh_token: refreshToken };
+    }
+
+    async reautenticar(body: any) {
+        const payload: Professor = await this.verificarRefreshToken(body);
+        return this.gerarToken(payload);
+    }
+
+    private async verificarRefreshToken(body: any): Promise<Professor> {
+        const refreshToken = body.refresh_token;
+
+        if (!refreshToken) {
+            throw new UnauthorizedException();
+        }
+
+        const email = this.jwtService.decode(refreshToken)['email'];
+        const user = await this.profService.findOneByEmail(email);
+
+        if (!user) {
+            throw new UnauthorizedException();
+        }
+
+        try {
+            this.jwtService.verify(refreshToken, { secret: 'refresh' });
+            return user;
+        } catch (error) {
+            throw new UnauthorizedException();
+        }
     }
 }
