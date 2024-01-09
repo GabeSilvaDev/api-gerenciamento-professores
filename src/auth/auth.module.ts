@@ -7,10 +7,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { ProfessoresService } from 'src/professores/professores.service';
 import { JwtStrategy } from './jwt-strategy';
 import { ProfessorMapperImpl } from 'src/professores/mappers/professor.mapper.impl';
+import { TokenInvalidoService } from 'src/token-invalido/token-invalido.service';
+import { TokenInvalido } from 'src/token-invalido/entities/token-invalido.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Professor]), JwtModule.register({})],
+  imports: [TypeOrmModule.forFeature([Professor, TokenInvalido]), JwtModule.register({})],
   controllers: [AuthController],
-  providers: [AuthService, ProfessoresService, JwtStrategy, ProfessorMapperImpl],
+  providers: [AuthService, ProfessoresService, JwtStrategy, ProfessorMapperImpl, TokenInvalidoService],
 })
 export class AuthModule { }
