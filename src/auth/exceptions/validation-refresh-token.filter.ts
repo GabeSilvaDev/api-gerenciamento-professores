@@ -1,29 +1,20 @@
 import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter, HttpException, UnauthorizedException } from "@nestjs/common";
 import { ValidationError } from "class-validator";
 import { Response } from 'express';
-import { ProfessorMailExistsException } from "src/professores/exceptions/professor-mail-exists-exception";
 
 @Catch(HttpException)
-export class ValidationExceptionFilter implements ExceptionFilter {
+export class ValidationRefreshTokenFilter implements ExceptionFilter {
     catch(exception: HttpException, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
         const validationErrors = exception.getResponse()['message'] as Array<ValidationError>;
 
-        if (exception instanceof ProfessorMailExistsException) {
-            response.status(400).send({
-                message: 'Validation fails',
-                status: 400,
-                error: 'Bad Request',
-                cause: 'ValidationError',
-                errors: { email: ['já utilizado'] },
-            });
-        } else if (exception instanceof UnauthorizedException) {
+        if (exception instanceof UnauthorizedException) {
             response.status(401).send({
-                message: 'Credenciais inválidas',
+                message: 'Token Inválido',
                 status: 401,
                 error: 'Unauthorized',
-                cause: 'InvalidCredentialsError',
+                cause: 'InvalidTokenError',
             });
         } else if (exception instanceof BadRequestException) {
             const errors = {}

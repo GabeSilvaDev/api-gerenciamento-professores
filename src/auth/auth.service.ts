@@ -64,6 +64,9 @@ export class AuthService {
         }
 
         try {
+            this.jwtService.verify(refreshToken, {
+                secret: process.env.REFRESH,
+            });
             const token = await this.token.findOne(refreshToken);
             if (!token) {
                 this.jwtService.verify(refreshToken, { secret: process.env.REFRESH });
@@ -81,6 +84,7 @@ export class AuthService {
         if (bearerTokenExists) {
             throw new UnauthorizedException();
         } else {
+            await this.verificarRefreshToken(refreshToken)
             const tokenExist = await this.token.findOne(refreshToken.refreshToken);
             if (!tokenExist) {
                 await this.token.create(refreshToken.refreshToken);
