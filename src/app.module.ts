@@ -10,17 +10,23 @@ import { MeModule } from './me/me.module';
 import { TokenInvalidoModule } from './token-invalido/token-invalido.module';
 import { config } from './ormconfig';
 import { FilesModule } from './files/files.module';
+import { FotoModule } from './foto/foto.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     /* TypeOrmModule.forRoot(config), */
-    ProfessoresModule,
     AlunosModule,
+    ProfessoresModule,
     AuthModule,
     MeModule,
     TokenInvalidoModule,
     FilesModule,
+    FotoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

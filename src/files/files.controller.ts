@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Req, UploadedFiles } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
-import multerConfig from './multer-config';
+import multerConfig from '../foto/multer-config';
 
 @Controller('files')
 export class FilesController {

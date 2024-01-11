@@ -33,12 +33,12 @@ export class AuthService {
     async gerarToken(payload: Professor) {
         const acessToken = this.jwtService.sign(
             { email: payload.email },
-            { secret: 'treina', expiresIn: '120s' }
+            { secret: process.env.SECRET, expiresIn: '120s' }
         );
 
         const refreshToken = this.jwtService.sign(
             { email: payload.email },
-            { secret: 'refresh', expiresIn: '240s' }
+            { secret: process.env.REFRESH, expiresIn: '240s' }
         );
 
         return { token: acessToken, refresh_token: refreshToken };
@@ -66,7 +66,7 @@ export class AuthService {
         try {
             const token = await this.token.findOne(refreshToken);
             if (!token) {
-                this.jwtService.verify(refreshToken, { secret: 'refresh' });
+                this.jwtService.verify(refreshToken, { secret: process.env.REFRESH });
                 await this.token.create(refreshToken);
                 return user;
             }

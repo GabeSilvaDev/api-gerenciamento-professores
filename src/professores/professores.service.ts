@@ -68,8 +68,14 @@ export class ProfessoresService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} professore`;
+  async updateFoto(professor: Professor, file: Express.MulterS3.File) {
+    professor.fotoPerfil = file.location; //url da foto no S3;
+    await this.professorRepository.update(professor.id, professor)
+    return { message: "Atualização realizada com sucesso" };
+  }
+
+  async remove(id: number) {
+    return await this.professorRepository.delete(id);
   }
 
   private async hashSenha(password: string): Promise<string> {

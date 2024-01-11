@@ -24,19 +24,12 @@ export class AlunosService {
     return this.alunoMapper.toAlunoResponse(alunoSalvo);
   }
 
-  findAll() {
-    return `This action returns all alunos`;
-  }
+  async findByProfessor(professor: Professor) {
+    const alunos = await this.alunoRepository.find({
+      relations: { professor: true },
+      where: { professor: { id: professor.id } },
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} aluno`;
-  }
-
-  /*   update(id: number, updateAlunoDto: AlunoRequestDto) {
-      return `This action updates a #${id} aluno`;
-    } */
-
-  remove(id: number) {
-    return `This action removes a #${id} aluno`;
+    return alunos.map(aluno => this.alunoMapper.toAlunoResponse(aluno));
   }
 }

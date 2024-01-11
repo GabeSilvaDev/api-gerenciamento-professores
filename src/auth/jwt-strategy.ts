@@ -10,14 +10,14 @@ import { TokenInvalidoService } from "src/token-invalido/token-invalido.service"
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     constructor(private userService: ProfessoresService, private jwtService: JwtService, private tokenService: TokenInvalidoService) {
         super({
-            secretOrKey: 'treina',
+            secretOrKey: process.env.SECRET,
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
         });
     }
 
     async validate(payload: JwtPayload) {
-        const bearerToken = this.jwtService.sign(payload, { secret: 'treina' });
+        const bearerToken = this.jwtService.sign(payload, { secret: process.env.SECRET });
         const tokenInvalido = await this.tokenService.findOne(bearerToken);
         const { email } = payload;
         const user = await this.userService.findOneByEmail(email);

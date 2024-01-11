@@ -14,7 +14,10 @@ export class Aluno {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @ManyToOne(() => Professor, (professor) => professor.aluno)
+  @ManyToOne(() => Professor, (professor) => professor.aluno, {
+    onDelete: 'CASCADE',
+    orphanedRowAction: 'delete',
+  })
   @JoinColumn({ name: 'professor_id' })
   professor: Professor;
 
@@ -28,13 +31,13 @@ export class Aluno {
   dataAula: Date;
 
   @CreateDateColumn({
-    type: 'datetime',
+    type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
   })
   createdAt: Date;
 
   @UpdateDateColumn({
-    type: 'datetime',
+    type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
     onUpdate: 'CURRENT_TIMESTAMP(6)',
   })

@@ -36,17 +36,19 @@ export class Professor {
   @Column({ nullable: false, length: 255 })
   password: string;
 
-  @OneToMany(() => Aluno, (aluno) => aluno.professor)
+  @OneToMany(() => Aluno, (aluno) => aluno.professor, {
+    cascade: ['remove'],
+  })
   aluno: Aluno;
 
   @CreateDateColumn({
-    type: 'datetime',
+    type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
   })
   createdAt: Date;
 
   @UpdateDateColumn({
-    type: 'datetime',
+    type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',
     onUpdate: 'CURRENT_TIMESTAMP(6)',
   })
