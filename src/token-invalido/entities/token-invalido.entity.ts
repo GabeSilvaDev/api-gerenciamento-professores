@@ -9,13 +9,13 @@ export class TokenInvalido {
     token: string;
 
     @CreateDateColumn({
-        type: 'timestamp',
+        type: 'datetime',
         default: () => 'CURRENT_TIMESTAMP(6)',
     })
     createdAt: Date;
 
     @UpdateDateColumn({
-        type: 'timestamp',
+        type: 'datetime',
         default: () => 'CURRENT_TIMESTAMP(6)',
         onUpdate: 'CURRENT_TIMESTAMP(6)',
     })

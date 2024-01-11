@@ -6,6 +6,9 @@ import { Professor } from './entities/professor.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProfessorNotFoundException } from './exceptions/professor-not-found-exception';
 import { ProfessorRequestDto } from './dto/professor-request.dto';
+import * as bcrypt from 'bcrypt';
+import { ProfessorUpdateDto } from './dto/professor-update.dto';
+import { ProfessorMailExistsException } from './exceptions/professor-mail-exists-exception';
 
 @Injectable()
 export class ProfessoresService {
@@ -51,11 +54,27 @@ export class ProfessoresService {
     });
   }
 
-  update(id: number) {
-    return `This action updates a #${id} professore`;
+  async update(id: number, updateProfessorDto: ProfessorUpdateDto) {
+    try {
+      const professor = this.professorMapper.toProfessorEntity(updateProfessorDto);
+      professor.password = await this.hashSenha(updateProfessorDto.password);
+      await this.professorRepository.update(id, professor);
+      const professorAtualizado = await this.findOneByEmail(updateProfessorDto.email);
+      return this.professorMapper.toProfessorResponse(professorAtualizado);
+    } catch (error) {
+      if (error.driverError.errno === 1062) {
+        throw new ProfessorMailExistsException();
+      }
+    }
   }
 
   remove(id: number) {
     return `This action removes a #${id} professore`;
+  }
+
+  private async hashSenha(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(password, salt);
+    return hashPassword;
   }
 }
